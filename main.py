@@ -1,77 +1,63 @@
-""" download segmented mpeg video (.ts files) from streaming websites """
-import sys
-import os
+from os import path
 import requests
+#  TBD import grequests
+import browser_cookie3
 
-M3URL = "https://video.app-eur.cvent.com/pr53/d720b6a7-36d6-4e27-bbf4-841a6e32dc5f/cb378920-e6fd-4fa7-8a99-ac5767910dcb/d547fcf2-9240-4d5d-a632-694b56571262/converted-videos-1699954733/hls/master_1080_1920_0_3500kbps.m3u8?Policy=eyJTdGF0ZW1lbnQiOiBbeyJSZXNvdXJjZSI6Imh0dHBzOi8vdmlkZW8uYXBwLWV1ci5jdmVudC5jb20vcHI1My9kNzIwYjZhNy0zNmQ2LTRlMjctYmJmNC04NDFhNmUzMmRjNWYvY2IzNzg5MjAtZTZmZC00ZmE3LThhOTktYWM1NzY3OTEwZGNiL2Q1NDdmY2YyLTkyNDAtNGQ1ZC1hNjMyLTY5NGI1NjU3MTI2Mi9jb252ZXJ0ZWQtdmlkZW9zLTE2OTk5NTQ3MzMvaGxzLyoiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE2OTk5OTQ3Nzh9fX1dfQ__&Signature=JAa-sJl7u9r6nJUqAfhp-x8tA9ksSmU6vzcNG8MDfeojRqLvXV6wVXeADh9zjXsL44dsFP-oTJI1n4Hh-7kOX9MUVLyqaa2SGJIf9K5R8ITQlE2GZ02TigPz2C4orfsorYtgynXCe0UypbXmdbB~96bqAXiBAEDxR3mXLLOkA0yEEiI1cTPbIzKGtOpzjGaxb5tNsaFEtqw3kr2vUxDQ86rbvTHGKnEg1hZk5IPQfdNz7t-Fs1nH3XYdyCv-pRXa110x3dbFp0PwMlF55uyZ5iu6XzUiIIFcZftLjCCnuF4QvVCRXxAG2yvE-yaigN8mDQEoDOATjLqsSotWDYawOA__&Key-Pair-Id=K2TLR9K095SRQ3"  # fill in: .m3u8 file url
-SEG1URL = "https://video.app-eur.cvent.com/pr53/d720b6a7-36d6-4e27-bbf4-841a6e32dc5f/cb378920-e6fd-4fa7-8a99-ac5767910dcb/d547fcf2-9240-4d5d-a632-694b56571262/converted-videos-1699954733/hls/master_1080_1920_0_3500kbps_00001.ts?Policy=eyJTdGF0ZW1lbnQiOiBbeyJSZXNvdXJjZSI6Imh0dHBzOi8vdmlkZW8uYXBwLWV1ci5jdmVudC5jb20vcHI1My9kNzIwYjZhNy0zNmQ2LTRlMjctYmJmNC04NDFhNmUzMmRjNWYvY2IzNzg5MjAtZTZmZC00ZmE3LThhOTktYWM1NzY3OTEwZGNiL2Q1NDdmY2YyLTkyNDAtNGQ1ZC1hNjMyLTY5NGI1NjU3MTI2Mi9jb252ZXJ0ZWQtdmlkZW9zLTE2OTk5NTQ3MzMvaGxzLyoiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE2OTk5OTQ3OTh9fX1dfQ__&Signature=ttXnXe9ptPPpU1-cyUDJB9Ntw1hDJGFy4-ycpK~4h3zkziz~NB9RRyqhhgCMjNH-RMjYESvKqkYhFQB83qwtoM5G63KFHTciGzsjtvdSooGbc9GDZeksxpCmS3dnb9I3bEWUjr8WLm9PbIVhrdvr6qCjM2HJaQdANgoCKUgY186LyEwvENq03u9noj3K~808Uh5dTml7XGzhwJ0G4n9aEYQA39b3-zjksKgFsOXrimteqYsTo7xOqslnCRHpI7y~LIdsOVgARziRHYV-d46-N4EPnM1rDWISbTGk6IFZTyTkAb3bD6kWwV2q-R3CBXs1N-EzxoWshRJiXn26TrtbqQ__&Key-Pair-Id=K2TLR9K095SRQ3"  # fill in: first ts segment file url
-REFERER = "https://web-eur.cvent.com/"  # fill in: some websites require a specific referer website to allow the request
-
-OUTNAME = 'video.ts'  # default output file name
-LOC = ""  # default save location
-
+#  hard-copy of browser's headers
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0",
+    "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0",
     "Accept": "*/*",
     "Accept-Language": "de,en-US;q=0.7,en;q=0.3",
     "Accept-Encoding": "gzip, deflate, br",
-    "Referer": REFERER,
+    "Host": "video.app-eur.cvent.com",
+    "Origin": "https://web-eur.cvent.com",
+    "Referer": "https://web-eur.cvent.com/",
     "DNT": "1",
     "Connection": "keep-alive",
     "Pragma": "no-cache",
     "Cache-Control": "no-cache"
 }
 
+#  Cookie Jar for requests
+cj = browser_cookie3.firefox()
 
-def getSegsNum(m3):
-    """ figure out how many segments there are using the m3u8 file """
-    lines = m3.text.split('\n')
-    nsegs = 0
-    for line in lines:
-        if 'seg-' in line and '.ts' in line:
-            tokens = line.split('-')
-            idx = 0
-            for i, tok in enumerate(tokens):
-                if 'seg' == tok[-3:]:
-                    idx = i + 1
-                    break
-            nsegs = int(tokens[idx])
-    return nsegs
+"""
+Manual split of URL leaving out (in this case) the five digit counter. e.g. file_00001.ts would be "file_" & ".ts"
 
+ROOM TO SPLIT URL
+https://video.app-eur.cvent.com/pr53/d720b6a7-36d6-4e27-bbf4-841a6e32dc5f/cb378920-e6fd-4fa7-8a99-ac5767910dcb/c5c61198-4e41-4417-8021-4b4fb70c55ee/converted-videos-1699895593/hls/master_1080_1920_0_3500kbps_00111
+.ts?Policy=eyJTdGF0ZW1lbnQiOiBbeyJSZXNvdXJjZSI6Imh0dHBzOi8vdmlkZW8uYXBwLWV1ci5jdmVudC5jb20vcHI1My9kNzIwYjZhNy0zNmQ2LTRlMjctYmJmNC04NDFhNmUzMmRjNWYvY2IzNzg5MjAtZTZmZC00ZmE3LThhOTktYWM1NzY3OTEwZGNiL2M1YzYxMTk4LTRlNDEtNDQxNy04MDIxLTRiNGZiNzBjNTVlZS9jb252ZXJ0ZWQtdmlkZW9zLTE2OTk4OTU1OTMvaGxzLyoiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE3MDAwNjI4NzB9fX1dfQ__&Signature=DFlIrSpgFH7kfJJqZSDNPQXZSfp317dkCCD22E0xHYScTjbO65Xg3P4ymXaLxNSasfqmp84YbuAhapWOt6rGrr-SPzspUBfdxNKtVs0hM7P6h~8-VYUPKylHI4RUBDmx7ieLH7PGG024VQgiyxrhDjOjLi6ggBxQLggN2tz-nuXC-urymF5Hhwke-jdFpqcomxd1WVcjqSHdy4NyEonHptoqbZ3Xj6liw2edi2axzuOnzXpkn34MgJunzip9noLmBQl~qpCudSWZDo0w9nhUFWx0jx0uXL8N20g3k0nLZNHUuEg-d25nCwLNqlH7sQyaqGpe~ypCsdTUTWeZPDqFmQ__&Key-Pair-Id=K2TLR9K095SRQ3
+ROOM TO SPLIT URL
+"""
+firstpath = "https://video.app-eur.cvent.com/pr53/d720b6a7-36d6-4e27-bbf4-841a6e32dc5f/cb378920-e6fd-4fa7-8a99-ac5767910dcb/c5c61198-4e41-4417-8021-4b4fb70c55ee/converted-videos-1699895593/hls/master_1080_1920_0_3500kbps_"  # isssing 5 digits
+secondpath = ".ts?Policy=eyJTdGF0ZW1lbnQiOiBbeyJSZXNvdXJjZSI6Imh0dHBzOi8vdmlkZW8uYXBwLWV1ci5jdmVudC5jb20vcHI1My9kNzIwYjZhNy0zNmQ2LTRlMjctYmJmNC04NDFhNmUzMmRjNWYvY2IzNzg5MjAtZTZmZC00ZmE3LThhOTktYWM1NzY3OTEwZGNiL2M1YzYxMTk4LTRlNDEtNDQxNy04MDIxLTRiNGZiNzBjNTVlZS9jb252ZXJ0ZWQtdmlkZW9zLTE2OTk4OTU1OTMvaGxzLyoiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE3MDAwNjI4NzB9fX1dfQ__&Signature=DFlIrSpgFH7kfJJqZSDNPQXZSfp317dkCCD22E0xHYScTjbO65Xg3P4ymXaLxNSasfqmp84YbuAhapWOt6rGrr-SPzspUBfdxNKtVs0hM7P6h~8-VYUPKylHI4RUBDmx7ieLH7PGG024VQgiyxrhDjOjLi6ggBxQLggN2tz-nuXC-urymF5Hhwke-jdFpqcomxd1WVcjqSHdy4NyEonHptoqbZ3Xj6liw2edi2axzuOnzXpkn34MgJunzip9noLmBQl~qpCudSWZDo0w9nhUFWx0jx0uXL8N20g3k0nLZNHUuEg-d25nCwLNqlH7sQyaqGpe~ypCsdTUTWeZPDqFmQ__&Key-Pair-Id=K2TLR9K095SRQ3"
 
-def dumpSegs(initUrl, n, path, append=False):
-    """ downlaod and combine the .ts files
-    given the first seg's url, the number of segments and
-    the destination download path """
-    with open(path, 'ab' if append else 'wb') as f:
-        for i in range(1, n + 1):
-            segurl = initUrl.replace('seg-1-', 'seg-{:d}-'.format(i))
-            success = False
-            while not success:
-                try:
-                    seg = requests.get(segurl, headers=HEADERS)
-                    success = True
-                except:
-                    print('retrying...')
-            f.write(seg.content)
-            print(('dumped seg%d.ts' % i) + '  %d%%' % (i * 100 / n))
+#  URL list
+links = []
 
 
-if __name__ == "__main__":
-    DEST = LOC + OUTNAME
-    if len(sys.argv) > 1:
-        DEST = sys.argv[1]
-    # validate destination:
-    delim = ''
-    if '\\' in DEST:
-        delim = '\\'
-    elif '/' in DEST:
-        delim = '/'
-    if delim:
-        PATH = ''.join(DEST.split(delim)[:-1])
-        if not os.path.isdir(PATH):
-            print('INAVLID DESTINATION.')
-            sys.exit(0)
-    m3u8 = requests.get(M3URL, headers=HEADERS)
-    nsegs = getSegsNum(m3u8)
-    dumpSegs(SEG1URL, nsegs, DEST)
+def get_filename(url):
+    #  create a filename from a URL leaving out HTTP, PATH, ending arguments e.g. "?2134452134&ewr5345"
+    fragment_removed = url.split("#")[0]  # keep to left of first #
+    query_string_removed = fragment_removed.split("?")[0]
+    scheme_removed = query_string_removed.split("://")[-1].split(":")[-1]
+    if scheme_removed.find("/") == -1:
+        return ""
+    return path.basename(scheme_removed)
+
+
+#  generate URL list
+for i in range(1, 3000):
+    # enter the number of digits behind the ":"
+    links.append(firstpath + str(f"{i:05}") + secondpath)  # enter the number of digits behind the ":"
+    print(firstpath + str(f"{i:05}") + secondpath)
+
+#  download files if HTTP GET OK
+for url in links:
+    r = requests.get(url, headers=HEADERS, cookies=cj)
+    print(r.status_code)
+    if r.status_code == requests.codes.ok:
+        filename = get_filename(url)
+        open(filename, 'wb').write(r.content)
+    else:
+        print("NOT OKAY")
