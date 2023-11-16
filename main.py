@@ -4,7 +4,11 @@ import browser_cookie3
 import requests
 
 # URL - paste in "url" line. check quotes!
-url = "https://video.app-eur.cvent.com/pr53/d720b6a7-36d6-4e27-bbf4-841a6e32dc5f/cb378920-e6fd-4fa7-8a99-ac5767910dcb/a0c805e0-dd59-4231-937b-02fc9e6858d1/converted-videos-1696523735/hls/video_1080_1920_0_3500kbps_00011.ts?Policy=eyJTdGF0ZW1lbnQiOiBbeyJSZXNvdXJjZSI6Imh0dHBzOi8vdmlkZW8uYXBwLWV1ci5jdmVudC5jb20vcHI1My9kNzIwYjZhNy0zNmQ2LTRlMjctYmJmNC04NDFhNmUzMmRjNWYvY2IzNzg5MjAtZTZmZC00ZmE3LThhOTktYWM1NzY3OTEwZGNiL2EwYzgwNWUwLWRkNTktNDIzMS05MzdiLTAyZmM5ZTY4NThkMS9jb252ZXJ0ZWQtdmlkZW9zLTE2OTY1MjM3MzUvaGxzLyoiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE3MDAxNDc2ODF9fX1dfQ__&Signature=YPfflYdwK1sgKL9vF-iPUNDAVk0Ag5UVy3gW-4yXNz8dn90pLHgcjZm8KVFCbMYmn88AVwwBMiZ4JDmqV-kh93b4-hVplrdFzdrx~SQA62TFqcOfTPMIBHsDXr~iYObYNSZdE5N-QC5RUKvklVPlxI6BovKm0VTP9CbF6RlwV0g7nbFSWaaqoRzJBWjC69Sn6Z7fx7lYRut8lUP1RjP1ghQ11VOR9Z9visLMK2fydFASGpiD6Ow7FHcFZhQmmQLVZICa0tqSWNA~52r7QwudWkj3P9UVRJjiZgvdozXlVD9NIrVCaCQ5-pIt9CIArfhJw2TeNIdFRDt45LtfSn-DHw__&Key-Pair-Id=K2TLR9K095SRQ3"
+#  url = "https://video.app-eur.cvent.com/pr53/d720b6a7-36d6-4e27-bbf4-841a6e32dc5f/cb378920-e6fd-4fa7-8a99-ac5767910dcb/eb309209-338e-48e9-a9e0-46045e100582/converted-videos-1696943810/hls/video_1080_1728_0_3500kbps_00008.ts?Policy=eyJTdGF0ZW1lbnQiOiBbeyJSZXNvdXJjZSI6Imh0dHBzOi8vdmlkZW8uYXBwLWV1ci5jdmVudC5jb20vcHI1My9kNzIwYjZhNy0zNmQ2LTRlMjctYmJmNC04NDFhNmUzMmRjNWYvY2IzNzg5MjAtZTZmZC00ZmE3LThhOTktYWM1NzY3OTEwZGNiL2ViMzA5MjA5LTMzOGUtNDhlOS1hOWUwLTQ2MDQ1ZTEwMDU4Mi9jb252ZXJ0ZWQtdmlkZW9zLTE2OTY5NDM4MTAvaGxzLyoiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE3MDAxNTQzOTV9fX1dfQ__&Signature=bZVQUC-38bhnyQocl9GFq9qOzZACWF2k9oxstNKbXugujrU4~EDRY6RUwVZvIC8r1fib71T4CBa-Wq-LlA8fwOnO8M1KL7Sbjc-TWk4Sdsq9FgQBB5j5Thpu3NUZt0WTItQQIT8aHl3LyzV4juX5SmLVpr957Vt3jlSmitowTKAsfZLA~5FzH34~vnb2IJXEU9kBMskhzYSRfqvsFybaRzPxKXd5paoCae-DKya5otgsGDo1UZ2U2F5xXM7fb4qINmcJvwXJiWUfiwc2s20Z8-2mP5Xyx-CUjSjwcy~Om8xuiT~CPb0a7alUS6cUqQzjuMFOkg0tmyEpYCBlgfNSMw__&Key-Pair-Id=K2TLR9K095SRQ3"
+url = input()
+# ENABLE ONLY ONE OF THE ABOVE LINES
+
+#  URL modifications
 url_split = url.split(".ts")
 size = len(url_split[0])
 url_split[0] = url_split[0][:size - 5]
@@ -19,13 +23,16 @@ HEADERS = {
     "Accept": "*/*",
     "Accept-Language": "de,en-US;q=0.7,en;q=0.3",
     "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive",
     "Host": "video.app-eur.cvent.com",
     "Origin": "https://web-eur.cvent.com",
     "Referer": "https://web-eur.cvent.com/",
-    "DNT": "1",
-    "Connection": "keep-alive",
-    "Pragma": "no-cache",
-    "Cache-Control": "no-cache"
+    "Sec-Fetch-Dest": "",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Site": "same-site",
+    "TE": "trailers",
+    #  "Pragma": "no-cache",
+    #  "Cache-Control": "no-cache"
 }
 
 #  Cookie Jar for requests
@@ -57,16 +64,28 @@ def get_filename(myurl: str) -> str:
 #  generate URL list
 for i in range(1, 3000):
     # enter the number of digits behind the ":"
-    links.append(firstpath + str(f"{i:05}") + secondpath)  # enter the number of digits behind the ":"
-    print(firstpath + str(f"{i:05}") + secondpath)
+    links.append(firstpath + str(f"{i:05}") + ".ts" + secondpath)  # enter the number of digits behind the ":"
+
+"""
+DEBUG SECTION
+
+print(links[0])
+print(url)
+if  links[0] == url:
+    print("same")
+else:
+    print("not the same")
+"""
 
 #  download files if HTTP GET OK
 for url in links:
     r = requests.get(url, headers=HEADERS, cookies=cj)
-    print(r.status_code)
+    #  print(r.status_code)
+    #  print(r.headers)
     if r.status_code == requests.codes.ok:
         filename = get_filename(url)
         open(filename, 'wb').write(r.content)
+        print(filename + " - HTTP: " + str(r.status_code)) #  can be made optional is you dont like spam
     else:
         print("NOT OKAY")
         break
@@ -78,10 +97,12 @@ for url in links:
 #  subprocess.run(['(for %i in (*.ts) do @echo file '%i') > mylist.txt'], stdout=subprocess.PIPE).stdout.decode('utf-8')
 #  subprocess.check_output("(for %i in (*.ts) do @echo file '%i') > mylist.txt", shell=True, text=True)
 
-#  Linux
-subprocess.check_output("printf "file '%s'\n" *.ts > mylist.txt", shell=True, text=True)
+#  OPTIONAL Linux shenanigans
+subprocess.check_output("printf 'file '%s'\n' *.ts > mylist.txt", shell=True, text=True)
 subprocess.check_output("ffmpeg -safe 0 -f concat -i mylist.txt -c copy output.mp4", shell=True, text=True)
-
+subprocess.check_output("rm *.ts", shell=True, text=True)
+subprocess.check_output("rm mylist.txt", shell=True, text=True)
+subprocess.check_output("mv output.mp4 /media/sf_Vidz_tmp", shell=True, text=True)
 
 
 

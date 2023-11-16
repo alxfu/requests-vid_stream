@@ -1,6 +1,11 @@
 # requests-vid_stream
 A small script to save *.ts files from streaming players if you know the/one URL(s) and the URLs are counting up
 
+
+## disclaimer
+You are solely responsible if you use/modify this script to make illegal copies of videos! 
+
+
 ## dependencies
 ### system
 - Mozilla Firefox - for its cookies (Chrome also works but needs a code change)
@@ -11,6 +16,7 @@ Linux/Ubuntu: Install via software manager or apt-get install
 - browser_cookie3 (if your env does not install, use "pip install browser_cookie3)
 - requests
 
+
 ## Usage:
 - clone repo
 - install dependencies on your pc and in your venv
@@ -19,11 +25,12 @@ Linux/Ubuntu: Install via software manager or apt-get install
 the script will split the URL at ".ts", substract 5 characters from the first part
 
 - run script
-- [x]it will abort ("break") loop when HTTP GET 200 changes to e.g. HTTP GET 404 
-- [ ]it will try to make one video file out of all the *.ts files
+-    it will abort ("break") loop when HTTP GET 200 changes to e.g. HTTP GET 404 
+-    it will try to make one video file out of all the *.ts files
 
 ### optional
 - set counter digits (default is 5)
 - set counter range (default is 3000)
+- enable/edit/disable file shenanigans
 
 
