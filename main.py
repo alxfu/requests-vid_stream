@@ -1,7 +1,16 @@
 from os import path
-import requests
-#  TBD import grequests
 import browser_cookie3
+import requests
+
+# URL - paste in "url" line. check quotes!
+url = "https://video.app-eur.cvent.com/pr53/d720b6a7-36d6-4e27-bbf4-841a6e32dc5f/cb378920-e6fd-4fa7-8a99-ac5767910dcb/c5c61198-4e41-4417-8021-4b4fb70c55ee/converted-videos-1699895593/hls/master_1080_1920_0_3500kbps_00111.ts?Policy=eyJTdGF0ZW1lbnQiOiBbeyJSZXNvdXJjZSI6Imh0dHBzOi8vdmlkZW8uYXBwLWV1ci5jdmVudC5jb20vcHI1My9kNzIwYjZhNy0zNmQ2LTRlMjctYmJmNC04NDFhNmUzMmRjNWYvY2IzNzg5MjAtZTZmZC00ZmE3LThhOTktYWM1NzY3OTEwZGNiL2M1YzYxMTk4LTRlNDEtNDQxNy04MDIxLTRiNGZiNzBjNTVlZS9jb252ZXJ0ZWQtdmlkZW9zLTE2OTk4OTU1OTMvaGxzLyoiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE3MDAwNjI4NzB9fX1dfQ__&Signature=DFlIrSpgFH7kfJJqZSDNPQXZSfp317dkCCD22E0xHYScTjbO65Xg3P4ymXaLxNSasfqmp84YbuAhapWOt6rGrr-SPzspUBfdxNKtVs0hM7P6h~8-VYUPKylHI4RUBDmx7ieLH7PGG024VQgiyxrhDjOjLi6ggBxQLggN2tz-nuXC-urymF5Hhwke-jdFpqcomxd1WVcjqSHdy4NyEonHptoqbZ3Xj6liw2edi2axzuOnzXpkn34MgJunzip9noLmBQl~qpCudSWZDo0w9nhUFWx0jx0uXL8N20g3k0nLZNHUuEg-d25nCwLNqlH7sQyaqGpe~ypCsdTUTWeZPDqFmQ__&Key-Pair-Id=K2TLR9K095SRQ3"
+url_split = url.split(".ts")
+size = len(url_split[0])
+url_split[0] = url_split[0][:size - 5]
+
+#  URL parts (missing the five last digits or element 0)
+firstpath = url_split[0]
+secondpath = url_split[1]
 
 #  hard-copy of browser's headers
 HEADERS = {
@@ -30,11 +39,7 @@ https://video.app-eur.cvent.com/pr53/d720b6a7-36d6-4e27-bbf4-841a6e32dc5f/cb3789
 ROOM TO SPLIT URL
 """
 
-#  URL parts
-firstpath = "https://video.app-eur.cvent.com/pr53/d720b6a7-36d6-4e27-bbf4-841a6e32dc5f/cb378920-e6fd-4fa7-8a99-ac5767910dcb/c5c61198-4e41-4417-8021-4b4fb70c55ee/converted-videos-1699895593/hls/master_1080_1920_0_3500kbps_"  # isssing 5 digits
-secondpath = ".ts?Policy=eyJTdGF0ZW1lbnQiOiBbeyJSZXNvdXJjZSI6Imh0dHBzOi8vdmlkZW8uYXBwLWV1ci5jdmVudC5jb20vcHI1My9kNzIwYjZhNy0zNmQ2LTRlMjctYmJmNC04NDFhNmUzMmRjNWYvY2IzNzg5MjAtZTZmZC00ZmE3LThhOTktYWM1NzY3OTEwZGNiL2M1YzYxMTk4LTRlNDEtNDQxNy04MDIxLTRiNGZiNzBjNTVlZS9jb252ZXJ0ZWQtdmlkZW9zLTE2OTk4OTU1OTMvaGxzLyoiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE3MDAwNjI4NzB9fX1dfQ__&Signature=DFlIrSpgFH7kfJJqZSDNPQXZSfp317dkCCD22E0xHYScTjbO65Xg3P4ymXaLxNSasfqmp84YbuAhapWOt6rGrr-SPzspUBfdxNKtVs0hM7P6h~8-VYUPKylHI4RUBDmx7ieLH7PGG024VQgiyxrhDjOjLi6ggBxQLggN2tz-nuXC-urymF5Hhwke-jdFpqcomxd1WVcjqSHdy4NyEonHptoqbZ3Xj6liw2edi2axzuOnzXpkn34MgJunzip9noLmBQl~qpCudSWZDo0w9nhUFWx0jx0uXL8N20g3k0nLZNHUuEg-d25nCwLNqlH7sQyaqGpe~ypCsdTUTWeZPDqFmQ__&Key-Pair-Id=K2TLR9K095SRQ3"
-
-#  URL list
+#  initialize URL list
 links = []
 
 
@@ -63,3 +68,8 @@ for url in links:
         open(filename, 'wb').write(r.content)
     else:
         print("NOT OKAY")
+        break
+
+
+
+
