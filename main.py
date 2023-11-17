@@ -103,35 +103,3 @@ subprocess.check_output("ffmpeg -safe 0 -f concat -i mylist.txt -c copy output.m
 subprocess.check_output("rm *.ts", shell=True, text=True)
 subprocess.check_output("rm mylist.txt", shell=True, text=True)
 subprocess.check_output("mv output.mp4 /media/sf_Vidz_tmp", shell=True, text=True)
-
-
-
-
-#  ffmpeg
-#  subprocess.run(['ffmpeg -safe 0 -f concat -i mylist.txt -c copy output.mp4'], stdout=subprocess.PIPE).stdout.decode('utf-8')
-
-
-
-"""
-Automatically generating the input file
-
-It is possible to generate this list file with a bash for loop, or using printf. Either of the following would generate a list file containing every *.wav in the working directory:
-
-# with a bash for loop
-for f in *.wav; do echo "file '$f'" >> mylist.txt; done
-# or with printf
-printf "file '%s'\n" *.wav > mylist.txt
-
-On Windows Command-line:
-
-(for %i in (*.wav) do @echo file '%i') > mylist.txt
-
-Or for Windows Powershell:
-
-foreach ($i in Get-ChildItem .\*.wav) {"file '$i'" | Out-File mylist.txt -Encoding utf8 -Append}
-
-Or for Windows bat-file:
-
-(for %%i in (*.wav) do @echo file '%%i') > mylist.txt
-
-"""

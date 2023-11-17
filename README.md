@@ -1,5 +1,6 @@
 # requests-vid_stream
 A small script to save *.ts files from streaming players if you know the/one URL(s) and the URLs are counting up
+and creates an MP4 file out of them via ffmpeg
 
 
 ## disclaimer
@@ -8,7 +9,7 @@ You are solely responsible if you use/modify this script to make illegal copies 
 
 ## dependencies
 ### system
-- Mozilla Firefox - for its cookies (Chrome also works but needs a code change)
+- Mozilla Firefox - for its cookies (Chrome/etc. also work but need a small code change)
 - FFMPEG - also needs to be in PATH (Windows)
 Windows see: https://www.wikihow.com/Install-FFmpeg-on-Windows
 Linux/Ubuntu: Install via software manager or apt-get install
